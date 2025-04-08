@@ -11,7 +11,9 @@ const generateToken = (user) => {
         email: user.email,
         name: user.name,
         role: user.role,
-        slug: user.slug
+        isAdmin: user.isAdmin,
+        isSuperAdmin: user.isSuperAdmin,
+        slug: user.slug,
     }, process.env.JWT_SECRET || "secret", { expiresIn: "24h" });
 };
 exports.generateToken = generateToken;

@@ -14,4 +14,5 @@ router.put("/events/:slug", authMiddleware_1.authenticate, adminMiddleware_1.isA
 router.delete("/events/:slug", authMiddleware_1.authenticate, adminMiddleware_1.isAdmin, eventController.deleteEvent.bind(eventController));
 router.get("/events", eventController.getAllEvents.bind(eventController));
 router.get("/events/:slug", eventController.getEventBySlug.bind(eventController));
+router.post("/events/flagdelete", eventController.flagDeleteEvent.bind(eventController));
 exports.default = router;

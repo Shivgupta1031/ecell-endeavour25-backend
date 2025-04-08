@@ -21,12 +21,19 @@ class EventService {
     }
     updateEvent(slug, eventData) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield event_model_1.EventModel.findOneAndUpdate({ slug }, eventData, { new: true });
+            return yield event_model_1.EventModel.findOneAndUpdate({ slug }, eventData, {
+                new: true,
+            });
         });
     }
     deleteEvent(slug) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield event_model_1.EventModel.findOneAndDelete({ slug });
+        });
+    }
+    flagDeleteEvent(slug) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield event_model_1.EventModel.findOneAndUpdate({ slug }, { isDeleted: true }, { new: true });
         });
     }
     getAllEvents() {

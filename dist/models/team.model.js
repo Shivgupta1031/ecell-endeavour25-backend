@@ -39,5 +39,9 @@ const teamSchema = new mongoose_1.Schema({
         type: Boolean,
         default: false,
     },
+    teamCode: {
+        type: String,
+        required: true,
+    }
 });
 exports.TeamModel = (0, mongoose_1.model)("Team", teamSchema);

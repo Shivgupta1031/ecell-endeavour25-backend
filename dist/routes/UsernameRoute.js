@@ -12,21 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.connectDB = void 0;
-const mongoose_1 = __importDefault(require("mongoose"));
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/my_database";
-const connectDB = () => __awaiter(void 0, void 0, void 0, function* () {
-    if (mongoose_1.default.connection.readyState > 0) {
-        console.log("Already connected to the database");
-        return;
-    }
-    try {
-        yield mongoose_1.default.connect(MONGO_URI);
-        console.log("Database connected successfully");
-    }
-    catch (error) {
-        console.error("Error connecting to the database:", error.message);
-        process.exit(1);
-    }
-});
-exports.connectDB = connectDB;
+const express_1 = __importDefault(require("express"));
+const UsernameController_1 = require("../controllers/UsernameController");
+const router = express_1.default.Router();
+const usernameController = new UsernameController_1.UsernameController();
+// Route to check if a username is already taken
+router.post("/search-username", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield usernameController.searchUsername(req, res);
+}));
+exports.default = router;

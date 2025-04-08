@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserModel = void 0;
-// user.model.ts
 const mongoose_1 = require("mongoose");
 const generateSlug_1 = require("../utils/generateSlug");
 const userSchema = new mongoose_1.Schema({
@@ -36,6 +35,28 @@ const userSchema = new mongoose_1.Schema({
         required: true,
         unique: true,
     },
+    rollNo: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    college: {
+        type: String,
+        required: true,
+    },
+    libId: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    gender: {
+        type: String,
+        required: true,
+    },
+    age: {
+        type: Number,
+        required: true,
+    },
     otp: {
         type: String,
         default: null,
@@ -56,10 +77,18 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         default: "",
     },
+    kitTaken: {
+        type: Boolean,
+        default: false,
+    },
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
 });
-userSchema.pre('save', function (next) {
+userSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (this.isNew || this.isModified('name')) {
+        if (this.isNew || this.isModified("name")) {
             try {
                 this.slug = yield (0, generateSlug_1.generateUniqueSlug)(this.name);
             }
