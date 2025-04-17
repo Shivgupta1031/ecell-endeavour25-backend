@@ -4,63 +4,83 @@ import { TeamModel } from "../models/team.model";
 import { TeamMemberModel } from "../models/members.model";
 
 export class TeamService {
-  // Add this method to TeamService
-async fetchUserRegisteredEvents(userId: string) {
-  // Find teams where user is the leader
-  const leaderTeams = await TeamModel.find({ leaderId: userId, isRegisterd: true })
-    .populate('eventId', 'name description startDate endDate venue image')
-    .lean();
-    
-  // Find team members where user is a member
-  const memberEntries = await TeamMemberModel.find({ userId, role: "MEMBER" });
-  
-  // Get team IDs where user is a member
-  const teamIds = memberEntries.map(entry => entry.teamId);
-  
-  // Find those teams
-  const memberTeams = await TeamModel.find({ 
-    _id: { $in: teamIds }, 
-    isRegisterd: true 
-  })
-    .populate('eventId', 'name description startDate endDate venue image')
-    .lean();
-  
-  // Combine both results
-  const allTeams = [...leaderTeams, ...memberTeams];
-  
-  return allTeams;
-}
-async getTeamById(teamId: string) {
-  return await TeamModel.findById(teamId)
-    .populate('eventId', 'name description startDate endDate venue image')
-    .lean();
-}
 
-async addTeam(TeamData: {
-  eventSlug: string;
-  leaderId: string;
-  teamName: string; 
-  isVerified: boolean;
-  paymentTransactionId: string;
-  paymentScreenshot: string;
-}) {
-  const {  eventSlug, leaderId, teamName, isVerified, paymentTransactionId, paymentScreenshot } = TeamData;
+  async fetchUserRegisteredEvents(userId: string) {
+    const leaderTeams = await TeamModel.find({ leaderId: userId, isRegisterd: true })
+      .populate('eventId', 'name description startDate endDate venue image')
+      .lean();
 
-  const existingEvent = await EventModel.findOne({ slug: eventSlug });
-  if (!existingEvent) {
-    throw new Error("Event not exists");
+    const memberEntries = await TeamMemberModel.find({ userId, role: "MEMBER" });
+
+    const teamIds = memberEntries.map(entry => entry.teamId);
+
+    const memberTeams = await TeamModel.find({
+      _id: { $in: teamIds },
+      isRegisterd: true
+    })
+      .populate('eventId', 'name description startDate endDate venue image')
+      .lean();
+
+    const allTeams = [...leaderTeams, ...memberTeams];
+
+    return allTeams;
   }
 
-  const teamCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-
-  const existingTeam = await TeamModel.findOne({ eventSlug, teamName });
-  if (existingTeam) {
-    throw new Error("Team name already exists for this event");
+  async fetchUserRegisteredEventsData(userId: string) {
+    const allTeams = await TeamModel.find({
+      $or: [
+        { leaderId: userId, isRegisterd: true },
+        { _id: { $in: (await TeamMemberModel.find({ userId, role: "MEMBER" }).lean()).map(entry => entry.teamId) }, isRegisterd: true }
+      ]
+    })
+      .populate({
+        path: 'eventId', 
+        select: 'name description registrationStartDate registrationEndDate eventDate fees poster qrcode slug', 
+      })
+      .populate({
+        path: 'members',
+        select: 'userId',
+        populate: {
+          path: 'userId', 
+          select: 'name email phone college gender slug profilePicture',
+        }
+      })
+      .lean();
+  
+    return allTeams;
   }
 
+  async getTeamById(teamId: string) {
+    return await TeamModel.findById(teamId)
+      .populate('eventId', 'name description startDate endDate venue image')
+      .lean();
+  }
 
-  const team = new TeamModel({
-    eventId: existingEvent.id,
+  async addTeam(TeamData: {
+    eventSlug: string;
+    leaderId: string;
+    teamName: string;
+    isVerified: boolean;
+    paymentTransactionId: string;
+    paymentScreenshot: string;
+  }) {
+    const { eventSlug, leaderId, teamName, isVerified, paymentTransactionId, paymentScreenshot } = TeamData;
+
+    const existingEvent = await EventModel.findOne({ slug: eventSlug });
+    if (!existingEvent) {
+      throw new Error("Event not exists");
+    }
+
+    const teamCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    const existingTeam = await TeamModel.findOne({ eventSlug, teamName });
+    if (existingTeam) {
+      throw new Error("Team name already exists for this event");
+    }
+
+
+    const team = new TeamModel({
+      eventId: existingEvent.id,
       eventSlug,
       leaderId,
       teamName,

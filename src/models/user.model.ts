@@ -64,6 +64,10 @@ const userSchema = new Schema({
     type: String,
     default: "",
   },
+  entertainment_eve_booked: {
+    type: Boolean,
+    default: false,
+  },
   kitTaken: {
     type: Boolean,
     default: false,

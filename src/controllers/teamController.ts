@@ -82,7 +82,7 @@ export class TeamController {
         );
       }
 
-      const teams = await this.teamService.fetchUserRegisteredEvents(userId as string);
+      const teams = await this.teamService.fetchUserRegisteredEventsData(userId as string);
       sendSuccess(res, MESSAGES.EVENTS_FETCH, { teams: teams || [] });
     } catch (error: any) {
       sendError(

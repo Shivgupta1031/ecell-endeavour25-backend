@@ -44,7 +44,7 @@ router.post("/user/registered-events", (req, res) =>
   teamController.getUserRegisteredEvents(req, res)
 );
 
-router.get("/user/registered-events-data", (req, res) =>
+router.post("/user/registered-events-data", (req, res) =>
   teamController.getUserRegisteredEventsData(req, res)
 );
 
