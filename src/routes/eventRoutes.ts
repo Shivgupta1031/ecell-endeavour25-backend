@@ -36,10 +36,12 @@ router.get("/events", eventController.getAllEvents.bind(eventController));
 router.get("/events/:slug", eventController.getEventBySlug.bind(eventController));
 
 router.post("/events/flagdelete", eventController.flagDeleteEvent.bind(eventController));
+
 router.patch(
   "/teams/verify/:teamCode",
   authenticate as RequestHandler,
   isAdmin as RequestHandler,
   eventController.verifyPayment.bind(eventController)
 );
+
 export default router;

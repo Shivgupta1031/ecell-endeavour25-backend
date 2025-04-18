@@ -44,15 +44,12 @@ export class EventService {
 
     if (teamAsLeader) return true;
 
-    // Check if user is a team member for this event
     const teamAsMember = await TeamModel.findOne({
       eventSlug,
       members: {
         $in: await TeamMemberModel.find({ userId }).distinct('_id')
       }
     });
-
-    console.log(teamAsMember)
 
     return !!teamAsMember;
   }

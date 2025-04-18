@@ -182,4 +182,23 @@ export class TeamService {
   async fetchMembersbyTeamId(teamId: string) {
     return await TeamMemberModel.find({ teamId });
   }
+  
+  async getAllTeams() {
+    const teams = await TeamModel.find({})
+      .populate({
+        path: "eventId",
+        select: "name startDate endDate venue image slug"
+      })
+      .populate({
+        path: 'members',
+        select: 'userId',
+        populate: {
+          path: 'userId', 
+          select: 'name email phone college gender slug profilePicture',
+        }
+      })
+      .lean();
+  
+    return teams;
+  }
 }

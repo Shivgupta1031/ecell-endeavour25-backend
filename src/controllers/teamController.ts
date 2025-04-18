@@ -47,7 +47,6 @@ export class TeamController {
   async getUserRegisteredEvents(req: Request, res: Response) {
     try {
       const { userId } = req.body
-      console.log(req.body);
 
       if (!userId) {
         return sendError(
@@ -72,7 +71,6 @@ export class TeamController {
   async getUserRegisteredEventsData(req: Request, res: Response) {
     try {
       const { userId } = req.body
-      console.log(req.body);
 
       if (!userId) {
         return sendError(
@@ -152,4 +150,17 @@ export class TeamController {
     }
   }
 
+  async getAllTeams(req: Request, res: Response) {
+    try {
+      const teams = await this.teamService.getAllTeams();
+      sendSuccess(res, MESSAGES.TEAM_FETCH, { teams });
+    } catch (error: any) {
+      sendError(
+        res,
+        error.message || MESSAGES.SERVER_ERROR,
+        STATUS_CODES.INTERNAL_SERVER,
+        error
+      );
+    }
+  }
 }

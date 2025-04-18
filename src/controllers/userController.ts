@@ -4,6 +4,8 @@ import { sendSuccess, sendError } from "../utils/responseHandler";
 import { STATUS_CODES } from "../constants/StatusCodes";
 import { MESSAGES } from "../constants/messages";
 import { UserModel } from "../models/user.model";
+import { TeamModel } from "../models/team.model";
+import { EventModel } from "../models/event.model";
 
 export class UserController {
   private userService: UserService;
@@ -14,16 +16,16 @@ export class UserController {
   async getUserProfile(req: Request, res: Response) {
     try {
       const userId = req.user.id;
-      
+
       const user = await UserModel.findById(userId).select('-password');
-      
+
       if (!user) {
         return res.status(404).json({
           success: false,
           message: "User not found"
         });
       }
-      
+
       return res.status(200).json({
         success: true,
         message: "User profile retrieved successfully",
@@ -161,8 +163,6 @@ export class UserController {
 
   async updateUser(req: Request, res: Response) {
     try {
-      console.log(req.params)
-      console.log(req.body)
       const user = await this.userService.updateUser(
         req.params.userId,
         req.body
@@ -191,6 +191,46 @@ export class UserController {
         STATUS_CODES.BAD_REQUEST,
         error
       );
+    }
+  }
+
+  async getDashboardData(req: Request, res: Response) {
+    try {
+      const [teamsByEvent, events, users] = await Promise.all([
+        TeamModel.find()
+          .populate({
+            path: "eventId",
+            select: "_id name slug poster fees"
+          })
+          .populate({
+            path: "members.userId",
+            select: "_id name slug email isVerified"
+          })
+          .lean(),
+
+        EventModel.find()
+          .select("_id name slug poster fees")
+          .lean(),
+
+        UserModel.find()
+          .select("_id name slug email isVerified")
+          .lean()
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: "Dashboard Data Retrieved Successfully",
+        data: {
+          teamsByEvent,
+          events,
+          users
+        }
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error"
+      });
     }
   }
 }

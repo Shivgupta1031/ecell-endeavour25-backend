@@ -26,4 +26,8 @@ router.post("/user/teams", authenticate, (req, res) =>
   teamController.getUserRegisteredEvents(req, res)
 );
 
+router.post("/all_teams", authenticate, (req, res) =>
+  teamController.getAllTeams(req, res)
+);
+
 export default router;

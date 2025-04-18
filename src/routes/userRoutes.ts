@@ -44,13 +44,16 @@ router.post("/user/registered-events", (req, res) =>
   teamController.getUserRegisteredEvents(req, res)
 );
 
-router.post("/user/registered-events-data", (req, res) =>
+router.post("/user/registered-events-data", authenticate, (req, res) =>
   teamController.getUserRegisteredEventsData(req, res)
 );
 
-// User profile routes
 router.get("/users/profile", authenticate, (req, res) => {
   userController.getUserProfile(req, res);
+});
+
+router.post("/dashboard_data", authenticate, (req, res) => {
+  userController.getDashboardData(req, res);
 });
 
 export default router;
